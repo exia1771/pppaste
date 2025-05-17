@@ -1,0 +1,52 @@
+{
+  "name": "PPPaste",
+  "description": "按下快捷键之后，如果鼠标选中一个输入框，记录输入框所处的元素，松开快捷键后，将剪切板中的内容粘贴到该元素中",
+  "manifest_version": 3,
+  "version": "1.0",
+  "permissions": [
+    "clipboardRead",
+    "scripting",
+    "commands",
+    "contextMenus",
+    "storage"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_script.js"]
+    }
+  ],
+  "icons": {
+    "32": "assets/icon32.png"
+  },
+  "commands": {
+    "paste": {
+      "suggested_key": {
+        "default": "Alt+Shift+V"
+      },
+      "description": "粘贴"
+    },
+    "highlight": {
+      "suggested_key": {
+        "default": "Alt+Shift+S"
+      },
+      "description": "高亮"
+    },
+    "clear": {
+      "suggested_key": {
+        "default": "Alt+Shift+C"
+      },
+      "description": "清除"
+    },
+    "undo": {
+      "suggested_key": {
+        "default": "Alt+Shift+Z"
+      },
+      "description": "撤销"
+    }
+  }
+}
