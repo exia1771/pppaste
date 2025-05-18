@@ -33,27 +33,26 @@ if (!window.pppaste.isEditableElement)
   window.pppaste.isEditableElement = isEditableElement;
 
 /**
- * 获取元素的唯一标识
+ * 获取元素的唯一标识符：优先使用ID，否则生成XPath
  */
 function getElementIdentifier(element) {
   if (element.id) return `id:${element.id}`;
 
-  // 如果没有ID，使用XPath作为备用方案
   const getXPath = (el) => {
-    if (!el || el.nodeType !== 1) return null;
+    if (!el || el.nodeType !== 1) return "";
+
     if (el.id) return `//*[@id="${el.id}"]`;
 
-    const siblings = el.parentNode ? el.parentNode.children : [];
-    let index = 0;
-    for (let i = 0; i < siblings.length; i++) {
-      if (siblings[i] === el) {
-        return `${getXPath(el.parentNode)}/${el.tagName.toLowerCase()}[${
-          index + 1
-        }]`;
-      }
-      if (siblings[i].tagName === el.tagName) index++;
+    const tag = el.tagName.toLowerCase();
+    let index = 1;
+    let sibling = el;
+
+    while ((sibling = sibling.previousElementSibling)) {
+      if (sibling.tagName.toLowerCase() === tag) index++;
     }
-    return null;
+
+    const parentPath = getXPath(el.parentNode);
+    return `${parentPath}/${tag}[${index}]`;
   };
 
   return `xpath:${getXPath(element)}`;
@@ -129,9 +128,9 @@ async function addToEditableElements(element) {
 
   // 添加新元素
   const newElement = {
-    id: elementId,
+    id: elementId.startsWith("id:") ? elementId.substring(3) : null,
     timestamp: Date.now(),
-    xpath: elementId.startsWith("xpath:") ? elementId : null,
+    xpath: elementId.startsWith("xpath:") ? elementId.substring(6) : null,
     elementId: element.id || null,
   };
 
@@ -163,28 +162,33 @@ if (!window.pppaste.unhighlightElement) {
   window.pppaste.unhighlightElement = unhighlightElement;
 }
 
-function findElementByIdentifier(identifier) {
-  if (identifier.id?.startsWith("id:")) {
-    return document.getElementById(identifier.id.substring(3));
+function findElement(elem) {
+  if (elem.id) {
+    return document.getElementById(elem.id);
   }
-  if (identifier.xpath) {
+
+  // 其余情况当作 XPath 处理
+  try {
     return document.evaluate(
-      identifier.xpath,
+      elem.xpath,
       document,
       null,
       XPathResult.FIRST_ORDERED_NODE_TYPE,
       null
     ).singleNodeValue;
+  } catch (e) {
+    console.warn("Invalid XPath:", elem.xpath, e);
+    return null;
   }
-  return null;
 }
+
 if (!window.pppaste.findElementByIdentifier) {
-  window.pppaste.findElementByIdentifier = findElementByIdentifier;
+  window.pppaste.findElementByIdentifier = findElement;
 }
 
 function resetElements(elements) {
   for (const el of elements) {
-    const element = findElementByIdentifier(el);
+    const element = findElement(el);
     if (element) unhighlightElement(element);
   }
   chrome.runtime.sendMessage({ action: "clearEditableElements" });
@@ -193,7 +197,7 @@ if (!window.pppaste.resetElements) window.pppaste.resetElements = resetElements;
 
 function removeLastElement(elements) {
   const lastElement = elements.pop();
-  const element = findElementByIdentifier(lastElement);
+  const element = findElement(lastElement);
   if (element) unhighlightElement(element);
   return elements;
 }
@@ -237,7 +241,7 @@ async function pasteContentToEditableElements(elements, splitRegex = /\s+/) {
 
     // 逐个填充内容
     for (let i = 0; i < elements.length; i++) {
-      const element = findElementByIdentifier(elements[i]);
+      const element = findElement(elements[i]);
       if (!element || !document.contains(element)) {
         console.warn("元素已不在DOM中:", elements[i]);
         continue;
