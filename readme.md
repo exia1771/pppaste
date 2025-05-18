@@ -21,10 +21,10 @@ A Chrome Extension for power users to quickly paste clipboard content into a sel
 
 | Action / 操作    | Default Shortcut / 默认快捷键 |
 | ---------------- | ----------------------------- |
-| Paste / 粘贴     | Alt + Shift + V               |
-| Highlight / 高亮 | Alt + Shift + S               |
-| Clear / 清除     | Alt + Shift + C               |
-| Undo / 撤销      | Alt + Shift + Z               |
+| Paste / 粘贴(默认使用空格分割行为)     | Alt + Shift + V               |
+| Highlight / 选中并高亮输入框 | Alt + Shift + S               |
+| Clear / 清除所有高亮选中     | Alt + Shift + C               |
+| Undo / 撤销上一个高亮选中      | Alt + Shift + Z               |
 
 > You can customize shortcuts at `chrome://extensions/shortcuts`  
 > 快捷键可在 `chrome://extensions/shortcuts` 页面自定义
@@ -43,9 +43,10 @@ A Chrome Extension for power users to quickly paste clipboard content into a sel
 ## 📋 How to Use / 使用方法
 
 1. 将鼠标移动到任意网页上的输入框（input 或 textarea）
-2. 按下快捷键 `Alt + Shift + V` 触发粘贴流程
-3. 剪贴板内容将自动填入上一步选中的输入框
-4. 可使用右键菜单选择分隔符进行多段粘贴处理
+2. 按下快捷键 `Alt + Shift + S` 选中输入框
+3. 按下快捷键 `Alt + Shift + V` 粘贴
+4. 剪贴板内容将自动填入上一步选中的输入框
+5. 可使用右键菜单选择分隔符进行多段粘贴处理
 
 ---
 
@@ -69,7 +70,6 @@ PPPaste/
 - `scripting`：注入脚本操作页面
 - `commands`：监听快捷键
 - `contextMenus`：注册右键菜单
-- `storage`：本地存储当前选中的输入框
 - `host_permissions: <all_urls>`：允许访问所有页面进行注入
 
 ---
@@ -80,21 +80,3 @@ This project is licensed under the **MIT License**.
 本项目采用 **MIT 开源协议**，可自由使用、修改和分发。
 
 请见 [LICENSE](./LICENSE) 文件。
-
----
-
-## 🙋 FAQ / 常见问题
-
-- ❓ 为什么有时没有粘贴成功？
-  - 可能当前页面限制剪贴板访问权限，建议刷新页面后重试。
-- ❓ 右键菜单点击报错？
-  - 请确保 `content_script.js` 已成功注入当前页面（插件需在用户操作页面后运行）。
-
----
-
-## 💡 Future Plans / 后续计划
-
-- ✅ 支持用户自定义分隔符
-- ✅ 提供历史粘贴记录撤销功能
-- 🚧 适配 Shadow DOM / iframe 环境
-- 🚧 添加图形界面设置页（Options Page）
