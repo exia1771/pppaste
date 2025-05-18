@@ -19,12 +19,12 @@ A Chrome Extension for power users to quickly paste clipboard content into a sel
 
 ## ⌨️ Keyboard Shortcuts / 快捷键
 
-| Action / 操作    | Default Shortcut / 默认快捷键 |
-| ---------------- | ----------------------------- |
-| Paste / 粘贴(默认使用空格分割行为)     | Alt + Shift + V               |
-| Highlight / 选中并高亮输入框 | Alt + Shift + S               |
-| Clear / 清除所有高亮选中     | Alt + Shift + C               |
-| Undo / 撤销上一个高亮选中      | Alt + Shift + Z               |
+| Action / 操作                      | Default Shortcut / 默认快捷键 |
+| ---------------------------------- | ----------------------------- |
+| Paste / 粘贴(默认使用空格分割行为) | Alt + Shift + V               |
+| Highlight / 选中并高亮输入框       | Alt + Shift + S               |
+| Clear / 清除所有高亮选中           | Alt + Shift + C               |
+| Undo / 撤销上一个高亮选中          | Alt + Shift + Z               |
 
 > You can customize shortcuts at `chrome://extensions/shortcuts`  
 > 快捷键可在 `chrome://extensions/shortcuts` 页面自定义
@@ -52,6 +52,7 @@ A Chrome Extension for power users to quickly paste clipboard content into a sel
 
 ## 📁 Project Structure / 项目结构
 
+<pre>
 PPPaste/
 ├── background.js # 后台服务 worker：监听快捷键、菜单、通信
 ├── highlight.js # 高亮脚本：高亮当前选中的输入框
@@ -61,6 +62,7 @@ PPPaste/
 ├── assets/icon32.png # 插件图标
 ├── LICENSE # MIT 开源协议
 └── README.md # 使用说明
+</pre>
 
 ---
 
