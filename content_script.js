@@ -123,7 +123,11 @@ async function addToEditableElements(element) {
   const elementId = getElementIdentifier(element);
 
   // 检查是否已存在
-  const exists = editableElements.some((el) => el.id === elementId);
+  const exists = editableElements.some((el) => {
+    if (el.id) return el.id === elementId.substring(3);
+    if (el.xpath) return el.xpath === elementId.substring(6);
+    return false;
+  });
   if (exists) return;
 
   // 添加新元素

@@ -7,8 +7,7 @@
     "clipboardRead",
     "scripting",
     "commands",
-    "contextMenus",
-    "storage"
+    "contextMenus"
   ],
   "host_permissions": ["<all_urls>"],
   "background": {
