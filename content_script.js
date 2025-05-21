@@ -67,26 +67,32 @@ if (!window.pppaste.getElementIdentifier)
 function highlightElement(element, index) {
   if (!element) return;
 
+  // 高亮元素
   element.style.outline = "2px solid red";
   element.style.outlineOffset = "2px";
-  element.style.position = "relative";
+
+  // 获取元素的位置信息
+  const rect = element.getBoundingClientRect();
 
   const footnote = document.createElement("div");
   footnote.className = "editable-element-footnote";
   footnote.textContent = `#${index + 1}`;
 
-  footnote.style.position = "absolute";
-  footnote.style.bottom = "-18px";
-  footnote.style.left = "0";
-  footnote.style.color = "red";
-  footnote.style.fontSize = "12px";
-  footnote.style.backgroundColor = "white";
-  footnote.style.padding = "0 4px";
-  footnote.style.borderRadius = "2px";
-  footnote.style.border = "1px solid red";
+  footnote.style.position = "fixed";
+  footnote.style.top = `${rect.top - 10}px`;
+  footnote.style.left = `${rect.left - 10}px`;
+  footnote.style.color = "white";
+  footnote.style.backgroundColor = "red";
+  footnote.style.fontSize = "10px";
+  footnote.style.padding = "2px 4px";
+  footnote.style.borderRadius = "8px";
+  footnote.style.border = "1px solid white";
   footnote.style.zIndex = "9999";
+  footnote.style.pointerEvents = "none";
 
-  element.parentNode.insertBefore(footnote, element.nextSibling);
+  document.body.appendChild(footnote);
+
+  // 保存引用用于清除
   element._footnoteElement = footnote;
 }
 if (!window.pppaste.highlightElement)
@@ -154,7 +160,6 @@ function unhighlightElement(element) {
 
   element.style.outline = "";
   element.style.outlineOffset = "";
-  element.style.position = "";
 
   if (element._footnoteElement) {
     element._footnoteElement.remove();
@@ -193,7 +198,7 @@ if (!window.pppaste.findElementByIdentifier) {
 function clearElements(elements) {
   for (const el of elements) {
     const element = findElementByIdentifier(el);
-    if (element) unhighlightElement(element);
+    unhighlightElement(element);
   }
   chrome.runtime.sendMessage({ action: "clearEditableElements" });
 }
@@ -202,7 +207,7 @@ if (!window.pppaste.resetElements) window.pppaste.resetElements = clearElements;
 function removeLastElement(elements) {
   const lastElement = elements.pop();
   const element = findElementByIdentifier(lastElement);
-  if (element) unhighlightElement(element);
+  unhighlightElement(element);
   return elements;
 }
 if (!window.pppaste.removeLastElement)
@@ -296,6 +301,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         request.editableElements,
         new RegExp(request.splitRegexSource, request.splitRegexFlags)
       );
+      break;
 
     case "clear":
       getEditableElements().then(clearElements);
@@ -311,6 +317,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     case "reselect":
       if (request.lastEditableElements) {
+        console.log(request.lastEditableElements);
         const selectedElements = [];
         for (let i = 0; i < request.lastEditableElements.length; i++) {
           const el = request.lastEditableElements[i];

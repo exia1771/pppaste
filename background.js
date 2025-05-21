@@ -45,13 +45,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     case "setEditableElements":
       editableElements = request.editableElements;
-      // 可选：这里可以添加chrome.storage.local.set()进行持久化存储
       break;
 
     case "clearEditableElements":
-      lastEditableElements = editableElements;
+      lastEditableElements = JSON.parse(JSON.stringify(editableElements));
       editableElements = [];
-      // 可选：这里可以添加chrome.storage.local.set()进行持久化存储
       break;
   }
 });
