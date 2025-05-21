@@ -166,42 +166,42 @@ if (!window.pppaste.unhighlightElement) {
   window.pppaste.unhighlightElement = unhighlightElement;
 }
 
-function findElement(elem) {
-  if (elem.id) {
-    return document.getElementById(elem.id);
+function findElementByIdentifier(identifier) {
+  if (identifier.id) {
+    return document.getElementById(identifier.id);
   }
 
   // 其余情况当作 XPath 处理
   try {
     return document.evaluate(
-      elem.xpath,
+      identifier.xpath,
       document,
       null,
       XPathResult.FIRST_ORDERED_NODE_TYPE,
       null
     ).singleNodeValue;
   } catch (e) {
-    console.warn("Invalid XPath:", elem.xpath, e);
+    console.warn("Invalid XPath:", identifier.xpath, e);
     return null;
   }
 }
 
 if (!window.pppaste.findElementByIdentifier) {
-  window.pppaste.findElementByIdentifier = findElement;
+  window.pppaste.findElementByIdentifier = findElementByIdentifier;
 }
 
-function resetElements(elements) {
+function clearElements(elements) {
   for (const el of elements) {
-    const element = findElement(el);
+    const element = findElementByIdentifier(el);
     if (element) unhighlightElement(element);
   }
   chrome.runtime.sendMessage({ action: "clearEditableElements" });
 }
-if (!window.pppaste.resetElements) window.pppaste.resetElements = resetElements;
+if (!window.pppaste.resetElements) window.pppaste.resetElements = clearElements;
 
 function removeLastElement(elements) {
   const lastElement = elements.pop();
-  const element = findElement(lastElement);
+  const element = findElementByIdentifier(lastElement);
   if (element) unhighlightElement(element);
   return elements;
 }
@@ -210,7 +210,7 @@ if (!window.pppaste.removeLastElement)
 
 async function pasteContentToEditableElements(elements, splitRegex = /\s+/) {
   // 从background获取可编辑元素
-  if (elements.length === 0) {
+  if (!elements || elements.length === 0) {
     console.warn("没有可编辑元素需要填充");
     return;
   }
@@ -245,7 +245,7 @@ async function pasteContentToEditableElements(elements, splitRegex = /\s+/) {
 
     // 逐个填充内容
     for (let i = 0; i < elements.length; i++) {
-      const element = findElement(elements[i]);
+      const element = findElementByIdentifier(elements[i]);
       if (!element || !document.contains(element)) {
         console.warn("元素已不在DOM中:", elements[i]);
         continue;
@@ -279,7 +279,7 @@ async function pasteContentToEditableElements(elements, splitRegex = /\s+/) {
     console.error("粘贴内容时出错:", error);
   } finally {
     // 取消所有高亮（需要先获取元素）
-    resetElements(elements);
+    clearElements(elements);
   }
 }
 
@@ -298,15 +298,30 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       );
 
     case "clear":
-      getEditableElements().then(resetElements);
+      getEditableElements().then(clearElements);
       break;
 
     case "undo":
       getEditableElements().then(removeLastElement).then(setEditableElements);
       break;
 
-    default:
-      sendResponse({ error: "Unknown action" });
+    case "select":
+      addToEditableElements(document.activeElement);
+      break;
+
+    case "reselect":
+      if (request.lastEditableElements) {
+        const selectedElements = [];
+        for (let i = 0; i < request.lastEditableElements.length; i++) {
+          const el = request.lastEditableElements[i];
+          const element = findElementByIdentifier(el);
+          if (element) {
+            highlightElement(element, i);
+            selectedElements.push(el);
+          }
+        }
+        setEditableElements(selectedElements);
+      }
       break;
   }
 });

@@ -1,14 +1,9 @@
 {
   "name": "PPPaste",
-  "description": "按下快捷键之后，如果鼠标选中一个输入框，记录输入框所处的元素，松开快捷键后，将剪切板中的内容粘贴到该元素中",
+  "description": "按下高亮快捷键之后，如果鼠标选中一个输入框，记录输入框所处的元素，使用粘贴快捷键，将剪切板中的内容粘贴到记录的元素中",
   "manifest_version": 3,
   "version": "1.0",
-  "permissions": [
-    "clipboardRead",
-    "scripting",
-    "commands",
-    "contextMenus"
-  ],
+  "permissions": ["clipboardRead", "scripting", "commands", "contextMenus"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
@@ -29,11 +24,11 @@
       },
       "description": "粘贴"
     },
-    "highlight": {
+    "select": {
       "suggested_key": {
         "default": "Alt+Shift+S"
       },
-      "description": "高亮"
+      "description": "选中并高亮输入框"
     },
     "clear": {
       "suggested_key": {
