@@ -317,7 +317,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     case "reselect":
       if (request.lastEditableElements) {
-        console.log(request.lastEditableElements);
         const selectedElements = [];
         for (let i = 0; i < request.lastEditableElements.length; i++) {
           const el = request.lastEditableElements[i];

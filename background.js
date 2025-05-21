@@ -133,6 +133,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       break;
 
     case "pppaste-reselect":
+      if (editableElements.length !== 0) return;
       chrome.tabs.sendMessage(tab.id, {
         action: "reselect",
         lastEditableElements,
