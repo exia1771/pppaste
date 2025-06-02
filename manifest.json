@@ -2,7 +2,7 @@
   "name": "PPPaste",
   "description": "按下高亮快捷键之后，如果鼠标选中一个输入框，记录输入框所处的元素，使用粘贴快捷键，将剪切板中的内容粘贴到记录的元素中",
   "manifest_version": 3,
-  "version": "1.1",
+  "version": "1.2",
   "permissions": ["clipboardRead", "commands", "contextMenus"],
   "host_permissions": ["<all_urls>"],
   "background": {
@@ -11,7 +11,8 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content_script.js"]
+      "js": ["content_script.js"],
+      "all_frames": true
     }
   ],
   "icons": {

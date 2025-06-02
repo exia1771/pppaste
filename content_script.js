@@ -149,7 +149,6 @@ async function addToEditableElements(element) {
 
   // 高亮显示
   highlightElement(element, updatedElements.length - 1);
-  console.log("✅ 已存储并高亮元素:", element);
 }
 
 if (!window.pppaste.addToEditableElements)
@@ -252,7 +251,6 @@ async function pasteContentToEditableElements(elements, splitRegex = /\s+/) {
     for (let i = 0; i < elements.length; i++) {
       const element = findElementByIdentifier(elements[i]);
       if (!element || !document.contains(element)) {
-        console.warn("元素已不在DOM中:", elements[i]);
         continue;
       }
 
